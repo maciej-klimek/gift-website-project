@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <h3>Ah, welcome my dear, please come in...</h3>
+      <form action="/login" method="post">
+        <div class="input-group">
+          <label for="username">Your name:</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+        <div class="input-group">
+          <label for="code">Your code:</label>
+          <input type="password" id="code" name="code" required />
+        </div>
+        <button type="submit">Login</button>
+        <button type="button" onclick="register()">Register?</button>
+      </form>
+    </div>
+    <p id="message" class="hidden"></p>
+
+    <script>
+      function register() {
+        fetch("/register")
+          .then((res) => res.text())
+          .then((text) => {
+            const message = document.getElementById("message");
+            message.innerText = text;
+            message.classList.remove("hidden");
+
+            setTimeout(() => {
+              message.classList.add("hidden");
+            }, 4000);
+          });
+      }
+    </script>
+  </body>
+</html>
