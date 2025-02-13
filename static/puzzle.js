@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const infoDisplay = document.createElement("div");
     infoDisplay.id = "info-display";
     infoDisplay.style.position = "fixed";
-    infoDisplay.style.bottom = "20px";
+    infoDisplay.style.bottom = "100px";
     infoDisplay.style.left = "50%";
     infoDisplay.style.transform = "translateX(-50%)";
     infoDisplay.style.color = "white";
@@ -116,17 +116,13 @@ document.addEventListener("DOMContentLoaded", () => {
       infoDisplay.style.display = "none";
     }
 
-    // Trigger the flash effect
+    // Flash effect
     const flashEffect = document.createElement("div");
     flashEffect.className = "flash-effect";
     document.body.appendChild(flashEffect);
+    setTimeout(() => flashEffect.remove(), 1000);
 
-    // Remove the flash effect after animation
-    setTimeout(() => {
-      flashEffect.remove();
-    }, 500); // Match duration of the animation
-
-    // Display the secret container
+    // Display secret container
     const secretContainer = document.getElementById("secret-container");
     secretContainer.style.display = "flex";
     secretContainer.style.position = "fixed";
@@ -135,20 +131,38 @@ document.addEventListener("DOMContentLoaded", () => {
     secretContainer.style.transform = "translate(-50%, -50%)";
 
     const cards = secretContainer.querySelectorAll(".card");
+
+    // Create a container for the Steam code
+    let codeContainer = document.getElementById("steam-code-container");
+    if (!codeContainer) {
+      codeContainer = document.createElement("div");
+      codeContainer.id = "steam-code-container";
+      codeContainer.className = "hidden";
+      codeContainer.innerHTML = `<p class="code-label">Your Steam Code:</p><p class="steam-code"></p><p class="erian-martin">From Erian and Martin with love, please enjoy ❤️</p>`;
+      secretContainer.appendChild(codeContainer);
+    }
+
     cards.forEach((card) => {
       card.addEventListener("click", function () {
+        const flashEffect = document.createElement("div");
+        flashEffect.className = "flash-effect";
+        document.body.appendChild(flashEffect);
+        setTimeout(() => flashEffect.remove(), 1000);
         if (this.getAttribute("data-revealed") === "true") return;
+
+        this.classList.add("revealed");
+        this.setAttribute("data-revealed", "true");
+
         fetch("/secret")
           .then((response) => response.json())
           .then((data) => {
-            this.innerText = data.code;
-            this.setAttribute("data-revealed", "true");
+            document.querySelector(".steam-code").textContent = data.code;
+            codeContainer.classList.remove("hidden");
           })
           .catch((error) => console.error("Error fetching secret code:", error));
       });
     });
   }
-
   document.addEventListener("keydown", (event) => {
     if (event.key.toLowerCase() === "d") {
       console.log("Debug mode activated: Instantly winning");
