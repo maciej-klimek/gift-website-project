@@ -9,7 +9,7 @@
   <body>
     <div class="login-container">
       <h3>Ah, welcome my dear, please come in...</h3>
-      <form action="/login" method="post">
+      <form id="login-form" action="/login" method="post">
         <div class="input-group">
           <label for="username">Your name:</label>
           <input type="text" id="username" name="username" required />
@@ -25,6 +25,31 @@
     <p id="message" class="hidden"></p>
 
     <script>
+      document.getElementById("login-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch("/login", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.text())
+          .then((text) => {
+            const message = document.getElementById("message");
+            message.innerText = text;
+            message.classList.remove("hidden");
+
+            if (text !== "nah") {
+              setTimeout(() => {
+                window.location.href = "/puzzle";
+              }, 1000);
+            } else {
+              setTimeout(() => {
+                message.classList.add("hidden");
+              }, 1000);
+            }
+          });
+      });
+
       function register() {
         fetch("/register")
           .then((res) => res.text())
@@ -39,6 +64,7 @@
           });
       }
     </script>
+
     <footer class="footer">© 2025 Martin Romper. All rights reserved.</footer>
   </body>
 </html>

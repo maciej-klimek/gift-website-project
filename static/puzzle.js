@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (gamePhase !== "spawn" || spawnClickCount >= 20) return;
 
     const clickedButton = event.target;
-    clickedButton.disabled = true; // Each button is clickable only once
+    clickedButton.disabled = true;
 
     spawnClickCount++;
 
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (spawnClickCount === 11) {
       gamePhase = "timer";
-      baseButton.disabled = false; // Re-enable base button in timer phase
+      baseButton.disabled = false;
       baseButton.innerText = "Click!";
       startTimer();
     }
@@ -54,7 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
     infoDisplay.style.fontSize = "20px";
     document.body.appendChild(infoDisplay);
 
-    // Change base button appearance
     baseButton.style.background = "darkred";
     baseButton.style.color = "white";
 
@@ -67,12 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const elapsed = Date.now() - timerStartTime;
       const secondsElapsed = Math.floor(elapsed / 1000);
 
-      // If the button is clicked 23 times before the 11th second
-      if (timerClickCount === 23 && secondsElapsed < 11) {
+      if (timerClickCount === 23 && secondsElapsed < 10) {
         baseButton.disabled = true;
         infoDisplay.innerText = "Oh... Too bad";
         setTimeout(() => {
-          location.reload(); // Refresh the page
+          location.reload();
         }, 1000);
         clearInterval(timerInterval);
         return;
@@ -116,42 +114,79 @@ document.addEventListener("DOMContentLoaded", () => {
       infoDisplay.style.display = "none";
     }
 
-    // Flash effect
     const flashEffect = document.createElement("div");
     flashEffect.className = "flash-effect";
     document.body.appendChild(flashEffect);
     setTimeout(() => flashEffect.remove(), 1000);
 
-    // Display secret container
     const secretContainer = document.getElementById("secret-container");
     secretContainer.style.display = "flex";
     secretContainer.style.position = "fixed";
-    secretContainer.style.top = "50%";
+    secretContainer.style.top = "40%";
     secretContainer.style.left = "50%";
     secretContainer.style.transform = "translate(-50%, -50%)";
 
     const cards = secretContainer.querySelectorAll(".card");
 
-    // Create a container for the Steam code
     let codeContainer = document.getElementById("steam-code-container");
     if (!codeContainer) {
       codeContainer = document.createElement("div");
       codeContainer.id = "steam-code-container";
       codeContainer.className = "hidden";
-      codeContainer.innerHTML = `<p class="code-label">Your Steam Code:</p><p class="steam-code"></p><p class="erian-martin">From Erian and Martin with love, please enjoy ❤️</p>`;
+      codeContainer.innerHTML = `
+    <p class="code-label">Your Steam Code:</p>
+    <p class="steam-code"></p>
+    <p class="erian-martin">From Erian and Martin with love, please enjoy ❤️</p>
+    <button id="reveal-all-btn">Not happy with your choice?</button>
+  `;
       secretContainer.appendChild(codeContainer);
     }
 
+    document.getElementById("reveal-all-btn").addEventListener("click", function () {
+      fetch("/allcodes")
+        .then((response) => response.json())
+        .then((data) => {
+          const modal = document.createElement("div");
+          modal.className = "modal";
+          modal.innerHTML = `
+        <div class="modal-content">
+          <span class="modal-close">&times;</span>
+          <p>Don't worry, u get them all anyway ;)</p>
+          <p class="steam-code-modal">${data.obra}</p>
+          <p class="steam-code-modal">${data.disco}</p>
+          <p class="steam-code-modal">${data.baba}</p>
+        </div>
+      `;
+          document.body.appendChild(modal);
+          modal.querySelector(".modal-close").addEventListener("click", function () {
+            modal.remove();
+          });
+        })
+        .catch((error) => console.error("Error fetching all codes:", error));
+    });
+
+    let cardChosen = false;
     cards.forEach((card) => {
-      card.addEventListener("click", function () {
+      card.addEventListener("click", function cardClickHandler() {
+        if (cardChosen) return;
+        cardChosen = true;
+
         const flashEffect = document.createElement("div");
         flashEffect.className = "flash-effect";
         document.body.appendChild(flashEffect);
         setTimeout(() => flashEffect.remove(), 1000);
-        if (this.getAttribute("data-revealed") === "true") return;
 
-        this.classList.add("revealed");
+        const header = secretContainer.querySelector("h2");
+        if (header) {
+          header.textContent = "Liked this game? Here's a much better one ;)";
+        }
+
+        this.classList.add("winner");
         this.setAttribute("data-revealed", "true");
+        const winnerContent = this.querySelector(".card-content");
+        if (winnerContent) {
+          winnerContent.textContent = " ";
+        }
 
         fetch("/secret")
           .then((response) => response.json())
@@ -160,6 +195,33 @@ document.addEventListener("DOMContentLoaded", () => {
             codeContainer.classList.remove("hidden");
           })
           .catch((error) => console.error("Error fetching secret code:", error));
+
+        const nonWinningCards = [];
+        cards.forEach((otherCard) => {
+          if (otherCard !== this) {
+            nonWinningCards.push(otherCard);
+          }
+        });
+        if (nonWinningCards[0]) {
+          nonWinningCards[0].classList.add("not-winner-disco");
+          nonWinningCards[0].setAttribute("data-revealed", "true");
+          const loserContent = nonWinningCards[0].querySelector(".card-content");
+          if (loserContent) {
+            loserContent.textContent = "X";
+          }
+        }
+        if (nonWinningCards[1]) {
+          nonWinningCards[1].classList.add("not-winner-baba");
+          nonWinningCards[1].setAttribute("data-revealed", "true");
+          const loserContent = nonWinningCards[1].querySelector(".card-content");
+          if (loserContent) {
+            loserContent.textContent = "X";
+          }
+        }
+
+        cards.forEach((card) => {
+          card.style.pointerEvents = "none";
+        });
       });
     });
   }

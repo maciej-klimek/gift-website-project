@@ -48,10 +48,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("[LOG] Login attempt - Username: %s\n", username)
 		if username == validUsername && hashPassword(password) == validPasswordHash {
 			fmt.Println("[LOG] Login successful")
-			http.Redirect(w, r, "/puzzle", http.StatusSeeOther)
+			w.Write([]byte("thank u daddy"))
 			return
 		}
 		fmt.Println("[LOG] Login failed")
+		w.Write([]byte("naah"))
+		return
 	}
 	templates.ExecuteTemplate(w, "login.html", nil)
 }
@@ -61,12 +63,10 @@ func puzzleHandler(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "puzzle.html", nil)
 }
 
-// secretHandler returns the secret code (only if the puzzle is solved)
 func secretHandler(w http.ResponseWriter, r *http.Request) {
-	// In production, you'd validate that the user solved the puzzle (e.g., via session data)
-	secretCode := os.Getenv("SECRET_CODE") // Set this in your .env file
+	obraCode := os.Getenv("OBRA_CODE")
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `{"code": "%s"}`, secretCode)
+	fmt.Fprintf(w, `{"code": "%s"}`, obraCode)
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,10 +74,17 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("u wish buddy ;)"))
 }
 
+func allCodesHandler(w http.ResponseWriter, r *http.Request) {
+	obraCode := os.Getenv("OBRA_CODE")
+	discoCode := os.Getenv("DISCO_CODE")
+	babaCode := os.Getenv("BABA_CODE")
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, `{"obra": "%s", "disco": "%s", "baba": "%s"}`, obraCode, discoCode, babaCode)
+}
+
 func main() {
 	fmt.Println("[LOG] Server started on port 8080")
 
-	// Serve static files from "static" directory
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
@@ -86,6 +93,7 @@ func main() {
 	http.HandleFunc("/puzzle", puzzleHandler)
 	http.HandleFunc("/secret", secretHandler)
 	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/allcodes", allCodesHandler)
 
 	http.ListenAndServe(":8080", nil)
 }
