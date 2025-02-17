@@ -226,8 +226,8 @@ h1 {
   background-image: url("/static/images/Obra.jpg");
   background-size: cover;
   background-position: center;
-  width: 250px;
-  height: 350px;
+  width: 200px;
+  height: 300px;
   border: solid 4px rgb(94, 167, 94);
   animation: pulse 2s ease-in-out infinite;
 }
