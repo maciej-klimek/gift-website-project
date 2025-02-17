@@ -126,8 +126,8 @@ h1 {
 
 .card {
   position: relative;
-  width: 200px;
-  height: 300px;
+  width: 165px;
+  height: 250px;
   background: black;
   border: 2px solid white;
   cursor: pointer;
