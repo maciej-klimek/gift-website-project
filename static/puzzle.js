@@ -225,12 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
-  document.addEventListener("keydown", (event) => {
-    if (event.key.toLowerCase() === "d") {
-      console.log("Debug mode activated: Instantly winning");
-      showSecretCards();
-    }
-  });
 
   baseButton.addEventListener("click", (event) => {
     if (gamePhase === "spawn") {
