@@ -223,7 +223,7 @@ h1 {
 }
 
 .winner {
-  background-image: url("/static/images/Obra.jpg");
+  background-image: url("/images/o.jpg");
   background-size: cover;
   background-position: center;
   width: 200px;
@@ -244,9 +244,8 @@ h1 {
   }
 }
 
-/* Non-winning card #1: Disco.jpg with grey effect and an X overlay */
 .not-winner-disco {
-  background-image: url("/static/images/Disco.jpg");
+  background-image: url("/images/d.jpg");
   background-size: cover;
   background-position: center;
   filter: grayscale(100%);
@@ -254,9 +253,8 @@ h1 {
   border-color: red;
 }
 
-/* Non-winning card #2: Baba.jpg with grey effect and an X overlay */
 .not-winner-baba {
-  background-image: url("/static/images/Baba.jpg");
+  background-image: url("/images/b.jpg");
   background-size: cover;
   background-position: center;
   filter: grayscale(100%);
@@ -264,7 +262,6 @@ h1 {
   border-color: red;
 }
 
-/* Modal backdrop */
 .modal {
   position: fixed;
   top: 0;
@@ -278,7 +275,6 @@ h1 {
   z-index: 1000;
 }
 
-/* Modal content box */
 .modal-content {
   background: rgb(0, 0, 0);
   padding: 50px;
@@ -291,7 +287,6 @@ h1 {
   border: solid 4px rgb(94, 167, 94);
 }
 
-/* Modal close button */
 .modal-close {
   position: absolute;
   top: 10px;
